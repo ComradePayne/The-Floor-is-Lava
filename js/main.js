@@ -16,37 +16,65 @@ window.onload = function() {
     var game = new Phaser.Game( 800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update } );
     
     function preload() {
-        // Load an image and call it 'logo'.
-        game.load.image( 'logo', 'assets/phaser.png' );
+        //Load the tile map
+        game.load.tilemap('map', 'assets/sprites/TheFloorIsLava.json',null,Phaser.Tilemap.TILED_JSON );
+        //Load sprites
+        game.load.spritesheet("dwarf", 'assets/sprites/dwarf_animated_32x32.png',32,32);
+        
+        game.load.image('mapTiles', 'assets/sprites/tileset_32x32.png');
+        
+        game.load.image('coolFloor', 'assets/sprites/cool_floor_32x32.png');
+        game.load.image('warmFloor', 'assets/sprites/warm_floor_32x32.png');
+        game.load.image('wall', 'assets/sprites/wall_32x32.png');
+        game.load.image('jewel', 'assets/sprites/yellowJewel_32x32.png');
+        game.load.image('lava', 'assets/sprites/lava_32x32.png');
+        //Load music an' such.
+        
+        
     }
     
-    var bouncy;
+    //Player variable
+    var dwarf;
+    //Player Speed
+    var DWARF_SPEED = 10;
+    
+    //Map variable
+    var cavernMap;
+    
+    //Layer/object variables
+    var coolFloorLayer;//Tile
+    var warmFloorLayer;//Tile
+    var lavaLayer;//Tile
+    var wallLayer;//Tile
+    var jewelLayer;   //Object
+    var stairsLayer; //Object
+    
+    //Stair variable
+        
+    //Number of jewels on the map
+    var numJewels;
     
     function create() {
-        // Create a sprite at the center of the screen using the 'logo' image.
-        bouncy = game.add.sprite( game.world.centerX, game.world.centerY, 'logo' );
-        // Anchor the sprite at its center, as opposed to its top-left corner.
-        // so it will be truly centered.
-        bouncy.anchor.setTo( 0.5, 0.5 );
         
-        // Turn on the arcade physics engine for this sprite.
-        game.physics.enable( bouncy, Phaser.Physics.ARCADE );
-        // Make it bounce off of the world bounds.
-        bouncy.body.collideWorldBounds = true;
+        //Physics!
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+        //First, link the tilemap with cavernmap.
+        cavernMap = game.add.tilemap('map');
+        cavernMap.addTilesetImage('tileset_32x32','mapTiles');
         
-        // Add some text using a CSS style.
-        // Center it in X, and position its top 15 pixels from the top of the world.
-        var style = { font: "25px Verdana", fill: "#9999ff", align: "center" };
-        var text = game.add.text( game.world.centerX, 15, "Build something awesome.", style );
-        text.anchor.setTo( 0.5, 0.0 );
+        //Establish our layers. We go from the bottom up!
+        coolFloorLayer = cavernMap.createLayer('CoolFloor');
+        warmFloorLayer = cavernMap.createLayer('HotFloor');
+        lavaLayer = cavernMap.createLayer('Lava');
+        wallLayer = cavernMap.createLayer('Wall Layer');
+        
+        lavaLayer.visible = false;
+        
+        
+        
     }
     
     function update() {
-        // Accelerate the 'logo' sprite towards the cursor,
-        // accelerating at 500 pixels/second and moving no faster than 500 pixels/second
-        // in X or Y.
-        // This function returns the rotation angle that makes it visually match its
-        // new trajectory.
-        bouncy.rotation = game.physics.arcade.accelerateToPointer( bouncy, this.game.input.activePointer, 500, 500, 500 );
+        
     }
 };
