@@ -13,7 +13,7 @@ window.onload = function() {
     
     "use strict";
     
-    var game = new Phaser.Game( 800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update } );
+    var game = new Phaser.Game( 288, 352, Phaser.AUTO, 'game', { preload: preload, create: create, update: update } );
     
     function preload() {
         //Load the tile map
@@ -28,6 +28,7 @@ window.onload = function() {
         game.load.image('wall', 'assets/sprites/wall_32x32.png');
         game.load.image('jewel', 'assets/sprites/yellowJewel_32x32.png');
         game.load.image('lava', 'assets/sprites/lava_32x32.png');
+        game.load.image('stairs', 'assets/sprites/stairs_32x32.png');
         //Load music an' such.
         
         
@@ -46,16 +47,21 @@ window.onload = function() {
     var warmFloorLayer;//Tile
     var lavaLayer;//Tile
     var wallLayer;//Tile
-    var jewelLayer;   //Object
-    var stairsLayer; //Object
+    var jewelGroup;   //Object
+    var stairsGroup; //Object
     
-    //Stair variable
+    //Cursors variable.
+    var cursors;
+    
+    //Timer variables. Two timers - lava duration timer and lava period timer.
+    var lavaDurationTimer;
+    var lavaPeriodTimer;
         
     //Number of jewels on the map
     var numJewels;
     
     function create() {
-        
+    //WORLD STUFF BELOW!
         //Physics!
         game.physics.startSystem(Phaser.Physics.ARCADE);
         //First, link the tilemap with cavernmap.
@@ -70,7 +76,30 @@ window.onload = function() {
         
         lavaLayer.visible = false;
         
+        //Establish objects.
+        jewelGroup = game.add.group();
+        stairsGroup = game.add.group();
         
+        cavernMap.createFromObjects('Jewels', 3, 'jewel',0, true, false, jewelGroup);
+        cavernMap.createFromObjects('Stairs', 6, 'stairs',0, true, false, stairsGroup);
+        
+    //DWARF STUFF BELOW!
+        //Establish the dwarf (the player) at the center of the bottom platform (See the Tiled map).
+        dwarf = game.add.sprite( 128 , 320, 'dwarf');
+        
+        //Dwarf Animations.
+        //ANIMATIONS! Just one, actually.
+        dwarf.animations.add('run', [1,2,3], 3, true);
+        //Set anchors so that rotation works properly.
+        dwarf.anchor.x = 0.5;
+        dwarf.anchor.y = 0.5;
+        //Enable the dwarf's body.
+        game.physics.arcade.enableBody(dwarf);
+        
+        //Get them keys setup.
+        cursors = game.input.keyboard.createCursorKeys();
+        
+    //TEST: Have the groups been filled properly?
         
     }
     

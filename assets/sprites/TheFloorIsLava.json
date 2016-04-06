@@ -59,7 +59,7 @@
 
                     },
                  "rotation":0,
-                 "type":"",
+                 "type":"jewel",
                  "visible":true,
                  "width":32,
                  "x":32,
@@ -75,7 +75,7 @@
 
                     },
                  "rotation":0,
-                 "type":"",
+                 "type":"jewel",
                  "visible":true,
                  "width":32,
                  "x":96,
@@ -91,7 +91,7 @@
 
                     },
                  "rotation":0,
-                 "type":"",
+                 "type":"jewel",
                  "visible":true,
                  "width":32,
                  "x":0,
@@ -107,7 +107,7 @@
 
                     },
                  "rotation":0,
-                 "type":"",
+                 "type":"jewel",
                  "visible":true,
                  "width":32,
                  "x":160,
