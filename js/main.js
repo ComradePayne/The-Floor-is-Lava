@@ -37,7 +37,7 @@ window.onload = function() {
     //Player variable
     var dwarf;
     //Player Speed
-    var DWARF_SPEED = 10;
+    var DWARF_SPEED = 32;
     
     //Map variable
     var cavernMap;
@@ -76,6 +76,10 @@ window.onload = function() {
         
         lavaLayer.visible = false;
         
+            //Collision for wall layer.
+        
+            cavernMap.setCollisionBetween(1,100,true, wallLayer);
+        
         //Establish objects.
         jewelGroup = game.add.group();
         stairsGroup = game.add.group();
@@ -90,20 +94,103 @@ window.onload = function() {
         //Dwarf Animations.
         //ANIMATIONS! Just one, actually.
         dwarf.animations.add('run', [1,2,3], 3, true);
+        
+        //Enable the dwarf's body. Resize it so it can fit into the crevices!
+        game.physics.arcade.enableBody(dwarf);
+        
+        dwarf.body.setSize(22,15,0,0);
+        
         //Set anchors so that rotation works properly.
         dwarf.anchor.x = 0.5;
         dwarf.anchor.y = 0.5;
-        //Enable the dwarf's body.
-        game.physics.arcade.enableBody(dwarf);
         
         //Get them keys setup.
         cursors = game.input.keyboard.createCursorKeys();
         
-    //TEST: Have the groups been filled properly?
+    //GAME LOGIC: 
         
+            //Lava Logic Setup:
+            //The lava collides with the dwarf.
+            cavernMap.setCollisionByExclusion([], true, lavaLayer, true);
+            //What should the game do when the dwarf collides with the lava?
+            cavernMap.setTileIndexCallback(5, fieryDeath, update, lavaLayer);
+        
+        lavaLayer.visible = true;
     }
     
     function update() {
+        
+        //The dwarf and the walls must collide!
+        game.physics.arcade.collide(dwarf,wallLayer);
+        
+        
+        
+        playerControl();
+        
+    }
+    
+    function collectJewel(dwarf, jewel){
+        jewel.kill();
+        numJewels--;
+    }
+    
+    function fieryDeath(dwarf, lavaLayer){
+        
+        if(lavaLayer.visible == true){
+            dwarf.kill();
+            game.add(world.centerX, world.centerY, 'Ya pranced into tha\' lava an\' died. \n Game O\'er, ya nitwit!\n');
+        
+        }
+    }
+
+    function playerControl(){
+        dwarf.body.velocity.x = 0;
+        dwarf.body.velocity.y = 0;
+        
+        
+        //Left
+        if(cursors.left.isDown){
+            dwarf.body.velocity.x = (-1)*DWARF_SPEED;
+            dwarf.rotation = 3*(3.14)/2;
+            dwarf.animations.play('run');
+            
+        }
+            
+            //Right
+            
+        else if(cursors.right.isDown){
+            
+            dwarf.body.velocity.x = DWARF_SPEED;
+            dwarf.rotation = (3.14)/2;
+            dwarf.animations.play('run');
+            
+        }
+            //Up
+        
+        else if(cursors.up.isDown){
+            dwarf.body.velocity.y = (-1)*DWARF_SPEED;
+            dwarf.rotation = (0);
+            dwarf.animations.play('run');
+            
+            
+        }
+            
+            //Down
+        else if(cursors.down.isDown){
+            dwarf.body.velocity.y = DWARF_SPEED;
+            dwarf.rotation = 3.14;
+            dwarf.animations.play('run');
+             
+        }
+        
+        //Idle
+        else{
+            
+            dwarf.animations.stop();
+            dwarf.frame = 0;
+            
+        }
+        
         
     }
 };
