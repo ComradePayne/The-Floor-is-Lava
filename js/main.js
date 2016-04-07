@@ -37,7 +37,7 @@ window.onload = function() {
     //Player variable
     var dwarf;
     //Player Speed
-    var DWARF_SPEED = 32;
+    var DWARF_SPEED = 60;
     
     //Map variable
     var cavernMap;
@@ -53,12 +53,17 @@ window.onload = function() {
     //Cursors variable.
     var cursors;
     
-    //Timer variables. Two timers - lava duration timer and lava period timer.
-    var lavaDurationTimer;
-    var lavaPeriodTimer;
-        
+    //Constants for the lava duration and the lava period.
+    //The lava period is the time between floods of lava.
+    //The lava duration is the amount of time a flood of lava lasts.
+    //Units are in milliseconds.
+    var lavaDuration = 2000;    //2 seconds
+    var lavaPeriod = 10000; //10 seconds
     //Number of jewels on the map
     var numJewels;
+    //Number of jewels the dwarf has collected.
+    var numCollected;
+    
     
     function create() {
     //WORLD STUFF BELOW!
@@ -89,7 +94,7 @@ window.onload = function() {
         
     //DWARF STUFF BELOW!
         //Establish the dwarf (the player) at the center of the bottom platform (See the Tiled map).
-        dwarf = game.add.sprite( 128 , 320, 'dwarf');
+        dwarf = game.add.sprite( 140 , 350, 'dwarf');
         
         //Dwarf Animations.
         //ANIMATIONS! Just one, actually.
@@ -109,40 +114,67 @@ window.onload = function() {
         
     //GAME LOGIC: 
         
-            //Lava Logic Setup:
-            //The lava collides with the dwarf.
-            cavernMap.setCollisionByExclusion([], true, lavaLayer, true);
-            //What should the game do when the dwarf collides with the lava?
-            cavernMap.setTileIndexCallback(5, fieryDeath, update, lavaLayer);
+        //Jewel & Stairs Logic:
         
-        lavaLayer.visible = true;
+        
+        //Lava Logic Setup:
+            //The lava collides with the dwarf.
+            cavernMap.setCollisionBetween(1,100, true, lavaLayer);
+            //What should the game do when the dwarf collides with the lava?
+            cavernMap.setTileIndexCallback(5, fieryDeath, this, lavaLayer);
+            //Lava Testing Code - Remove when finished!
+            lavaLayer.visible = true;
+        
+        //Timer Setup; create the two timers, set the lava period timer.
+        
+        
+            
     }
     
     function update() {
         
         //The dwarf and the walls must collide!
         game.physics.arcade.collide(dwarf,wallLayer);
+        //As must the dwarf and the lavaLayer!
+        game.physics.arcade.collide(dwarf, lavaLayer);
         
-        
-        
+        // Listen for keyboard input and move dwarf character.
         playerControl();
         
     }
     
+    function lavaFlood(lavaLayer){
+        lavaLayer.visible = true;
+        //After we make the lava visible, we set a delay for calling lavaRecede after the lava duration has passed. 
+        game.time.events.add(lavaDuration, this.lavaRecede, this, lavaLayer );
+        
+        
+    }
+    
+    function lavaRecede(lavaLayer){
+        lavaLayer.visible = false;
+        //After the lava is dispelled, call lavaFlood() after the lava period has passed.
+        game.time.events.add(lavaPeriod, this.lavaFlood, this, lavaLayer );
+        
+        
+    }
+    
+    
+    //What happens after the dwarf overlaps with a jewel?
     function collectJewel(dwarf, jewel){
         jewel.kill();
         numJewels--;
     }
-    
+    //What happens when the dwarf collides with a visible lava tile?
     function fieryDeath(dwarf, lavaLayer){
         
         if(lavaLayer.visible == true){
             dwarf.kill();
-            game.add(world.centerX, world.centerY, 'Ya pranced into tha\' lava an\' died. \n Game O\'er, ya nitwit!\n');
+            game.add.text(game.world.centerX, game.world.centerY, 'Ya pranced into tha\' lava an\' died. \n Game O\'er, ya nitwit!\n');
         
         }
     }
-
+    //How does the dwarf move about?
     function playerControl(){
         dwarf.body.velocity.x = 0;
         dwarf.body.velocity.y = 0;
