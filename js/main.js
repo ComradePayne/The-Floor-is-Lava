@@ -125,17 +125,17 @@ window.onload = function() {
         
         //Jewel & Stairs Logic:
         
-        
-        
+            //Initialize jewel count, jewel and stair bodies.
+            numJewels = jewelGroup.length;
+            jewelGroup.enableBody = true;
+            stairsGroup.enableBody = true;
         
         //Lava Logic Setup:
             //The lava collides with the dwarf.
             cavernMap.setCollisionBetween(1,100, true, lavaLayer);
             //What should the game do when the dwarf collides with the lava?
             cavernMap.setTileIndexCallback(5, fieryDeath, this, lavaLayer);
-            //Lava Testing Code - Remove when finished!
-            lavaLayer.visible = true;
-        
+
         //Timer Setup; create the two timers, set the lava period timer.
         game.time.events.add(0, lavaRecede, this, lavaLayer);
         
@@ -149,10 +149,14 @@ window.onload = function() {
         //As must the dwarf and the lavaLayer!
         game.physics.arcade.collide(dwarf, lavaLayer);
         
+        game.physics.arcade.overlap(dwarf, jewelGroup, collectJewel, null, this);
+        
         // Listen for keyboard input and move dwarf character.
         playerControl();
         
     }
+    
+   
     
     function lavaFlood(lavaLayer){
         lavaLayer.visible = true;
