@@ -126,6 +126,8 @@ window.onload = function() {
         //Jewel & Stairs Logic:
         
         
+        
+        
         //Lava Logic Setup:
             //The lava collides with the dwarf.
             cavernMap.setCollisionBetween(1,100, true, lavaLayer);
@@ -135,7 +137,7 @@ window.onload = function() {
             lavaLayer.visible = true;
         
         //Timer Setup; create the two timers, set the lava period timer.
-        
+        game.time.events.add(0, lavaRecede, this, lavaLayer);
         
             
     }
@@ -155,7 +157,7 @@ window.onload = function() {
     function lavaFlood(lavaLayer){
         lavaLayer.visible = true;
         //After we make the lava visible, we set a delay for calling lavaRecede after the lava duration has passed. 
-        game.time.events.add(lavaDuration, this.lavaRecede, this, lavaLayer );
+        game.time.events.add(lavaDuration, lavaRecede, this, lavaLayer );
         
         
     }
@@ -163,10 +165,12 @@ window.onload = function() {
     function lavaRecede(lavaLayer){
         lavaLayer.visible = false;
         //After the lava is dispelled, call lavaFlood() after the lava period has passed.
-        game.time.events.add(lavaPeriod, this.lavaFlood, this, lavaLayer );
+        game.time.events.add(lavaPeriod, lavaFlood, this, lavaLayer );
         
         
     }
+    
+    function nextLevel(dwarf, numJewels, stairsGroup){}
     
     
     //What happens after the dwarf overlaps with a jewel?
