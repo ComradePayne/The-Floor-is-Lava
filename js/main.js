@@ -54,17 +54,8 @@ window.onload = function() {
     var cursors;
     
     //Constants for the lava duration and the lava period.
-    //The lava period is the time between consecutive floods of lava.
-    //The lava duration is the amount of time a single flood of lava lasts.
-    
-    //Lava Flooding Time Diagram
-    
-    
-    //   No lava.    Lava!  No lava.
-    //  <__________> <==> <__________>
-    //     10s       2s      10s
-    
-    
+    //The lava period is the time between floods of lava.
+    //The lava duration is the amount of time a flood of lava lasts.
     //Units are in milliseconds.
     var lavaDuration = 2000;    //2 seconds
     var lavaPeriod = 10000; //10 seconds
