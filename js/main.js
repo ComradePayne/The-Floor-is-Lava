@@ -17,18 +17,18 @@ window.onload = function() {
     
     function preload() {
         //Load the tile map
-        game.load.tilemap('map', 'assets/sprites/TheFloorIsLava.json',null,Phaser.Tilemap.TILED_JSON );
+        game.load.tilemap('cavernmap', '../assets/sprites/TheFloorIsLava.json',null,Phaser.Tilemap.TILED_JSON );
         //Load sprites
-        game.load.spritesheet("dwarf", 'assets/sprites/dwarf_animated_32x32.png',32,32);
+        game.load.spritesheet("dwarf", '../assets/sprites/dwarf_animated_32x32.png',32,32);
         
-        game.load.image('mapTiles', 'assets/sprites/tileset_32x32.png');
+        game.load.image('mapTiles', '../assets/sprites/tileset_32x32.png');
         
-        game.load.image('coolFloor', 'assets/sprites/cool_floor_32x32.png');
-        game.load.image('warmFloor', 'assets/sprites/warm_floor_32x32.png');
-        game.load.image('wall', 'assets/sprites/wall_32x32.png');
-        game.load.image('jewel', 'assets/sprites/yellowJewel_32x32.png');
-        game.load.image('lava', 'assets/sprites/lava_32x32.png');
-        game.load.image('stairs', 'assets/sprites/stairs_32x32.png');
+        game.load.image('coolFloor', '../assets/sprites/cool_floor_32x32.png');
+        game.load.image('warmFloor', '../assets/sprites/warm_floor_32x32.png');
+        game.load.image('wall', '../assets/sprites/wall_32x32.png');
+        game.load.image('jewel', '../assets/sprites/yellowJewel_32x32.png');
+        game.load.image('lava', '../assets/sprites/lava_32x32.png');
+        game.load.image('stairs', '../assets/sprites/stairs_32x32.png');
         //Load music an' such.
         
         
@@ -52,6 +52,11 @@ window.onload = function() {
     
     //Cursors variable.
     var cursors;
+    
+    var jewel1;
+    var jewel2;
+    var jewel3;
+    var jewel4;
     
     //Constants for the lava duration and the lava period.
     //The lava period is the time between consecutive floods of lava.
@@ -79,7 +84,7 @@ window.onload = function() {
         //Physics!
         game.physics.startSystem(Phaser.Physics.ARCADE);
         //First, link the tilemap with cavernmap.
-        cavernMap = game.add.tilemap('map');
+        cavernMap = game.add.tilemap('cavernmap');
         cavernMap.addTilesetImage('tileset_32x32','mapTiles');
         
         //Establish our layers. We go from the bottom up!
@@ -98,8 +103,20 @@ window.onload = function() {
         jewelGroup = game.add.group();
         stairsGroup = game.add.group();
         
-        cavernMap.createFromObjects('Jewels', 3, 'jewel',0, true, false, jewelGroup);
-        cavernMap.createFromObjects('Stairs', 6, 'stairs',0, true, false, stairsGroup);
+        //Bugger it, add the jewels all individually!
+        
+        jewel1 = game.add.sprite(32,32, 'jewel');
+        jewel2 = game.add.sprite(0,256, 'jewel');
+        jewel3 = game.add.sprite(96,224, 'jewel');
+        jewel4 = game.add.sprite(160,128, 'jewel');
+
+        //cavernMap.createFromObjects('Jewels', 3, 'jewel',0, true, false, jewelGroup);
+        //cavernMap.createFromObjects('Stairs', 6, 'stairs',0, true, false, stairsGroup);
+        
+        jewelGroup.add(jewel1);
+        jewelGroup.add(jewel2);
+        jewelGroup.add(jewel3);
+        jewelGroup.add(jewel4);
         
     //DWARF STUFF BELOW!
         //Establish the dwarf (the player) at the center of the bottom platform (See the Tiled map).
@@ -111,6 +128,8 @@ window.onload = function() {
         
         //Enable the dwarf's body. Resize it so it can fit into the crevices!
         game.physics.arcade.enableBody(dwarf);
+        
+        dwarf.body.collideWorldBounds = true;
         
         dwarf.body.setSize(22,15,0,0);
         
@@ -127,12 +146,14 @@ window.onload = function() {
         
             //Initialize jewel count, jewel and stair bodies.
             numJewels = jewelGroup.length;
-            jewelGroup.enableBody = true;
+            game.physics.arcade.enable(jewelGroup, true);
+        
+            //jewelGroup.enableBody = true;
             stairsGroup.enableBody = true;
         
         //Lava Logic Setup:
             //The lava collides with the dwarf.
-            cavernMap.setCollisionBetween(1,100, true, lavaLayer);
+            //cavernMap.setCollisionBetween(1,100, true, lavaLayer);
             //What should the game do when the dwarf collides with the lava?
             cavernMap.setTileIndexCallback(5, fieryDeath, this, lavaLayer);
 
@@ -156,9 +177,10 @@ window.onload = function() {
         
     }
     
-   
+   //TODO: Make own 'lavaEnabled' variable, so not relying on visible.
     
     function lavaFlood(lavaLayer){
+        console.log('Lava has flooded the cavern!');
         lavaLayer.visible = true;
         //After we make the lava visible, we set a delay for calling lavaRecede after the lava duration has passed. 
         game.time.events.add(lavaDuration, lavaRecede, this, lavaLayer );
@@ -167,6 +189,7 @@ window.onload = function() {
     }
     
     function lavaRecede(lavaLayer){
+        console.log('The lava has receded!');
         lavaLayer.visible = false;
         //After the lava is dispelled, call lavaFlood() after the lava period has passed.
         game.time.events.add(lavaPeriod, lavaFlood, this, lavaLayer );
@@ -179,13 +202,16 @@ window.onload = function() {
     
     //What happens after the dwarf overlaps with a jewel?
     function collectJewel(dwarf, jewel){
+        console.log('Overlapping a jewel!');
         jewel.kill();
         numJewels--;
     }
     //What happens when the dwarf collides with a visible lava tile?
     function fieryDeath(dwarf, lavaLayer){
-        
-        if(lavaLayer.visible == true){
+        console.log('Check for a fiery death!');
+        console.log(lavaLayer.visible);
+        if(lavaLayer.visible === true){
+            console.log('Lava layer is visible!');
             dwarf.kill();
             game.add.text(game.world.centerX, game.world.centerY, 'Ya pranced into tha\' lava an\' died. \n Game O\'er, ya nitwit!\n');
         
