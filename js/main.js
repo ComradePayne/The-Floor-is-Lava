@@ -11,6 +11,7 @@ window.onload = function() {
     // loading functions to reflect where you are putting the assets.
     // All loading functions will typically all be found inside "preload()".
     
+    //Commit bait here!
     "use strict";
     
     var game = new Phaser.Game( 288, 352, Phaser.AUTO, 'game', { preload: preload, create: create, update: update } );
