@@ -37,7 +37,7 @@ window.onload = function() {
     //Player variable
     var dwarf;
     //Player Speed
-    var DWARF_SPEED = 60;
+    var DWARF_SPEED = 38;
     
     //Map variable
     var cavernMap;
@@ -60,6 +60,8 @@ window.onload = function() {
     var jewel2;
     var jewel3;
     var jewel4;
+    
+    var stairs;
     
     //Constants for the lava duration and the lava period.
     //The lava period is the time between consecutive floods of lava.
@@ -121,6 +123,11 @@ window.onload = function() {
         jewelGroup.add(jewel3);
         jewelGroup.add(jewel4);
         
+        //The Stairs, too!
+        stairs = game.add.sprite(192,0,'stairs');
+        stairsGroup.add(stairs);
+        
+        
     //DWARF STUFF BELOW!
         //Establish the dwarf (the player) at the center of the bottom platform (See the Tiled map).
         dwarf = game.add.sprite( 140 , 350, 'dwarf');
@@ -150,9 +157,10 @@ window.onload = function() {
             //Initialize jewel count, jewel and stair bodies.
             numJewels = jewelGroup.length;
             game.physics.arcade.enable(jewelGroup, true);
+            game.physics.arcade.enable(stairsGroup, true);
         
             //jewelGroup.enableBody = true;
-            stairsGroup.enableBody = true;
+            //stairsGroup.enableBody = true;
         
         //Lava Logic Setup:
             //The lava collides with the dwarf.
@@ -174,6 +182,8 @@ window.onload = function() {
         game.physics.arcade.collide(dwarf, lavaLayer);
         
         game.physics.arcade.overlap(dwarf, jewelGroup, collectJewel, null, this);
+        
+        game.physics.arcade.overlap(dwarf, stairsGroup, nextLevel, null, this);
         
         // Listen for keyboard input and move dwarf character.
         playerControl();
@@ -202,7 +212,15 @@ window.onload = function() {
         
     }
     
-    function nextLevel(dwarf, numJewels, stairsGroup){}
+    function nextLevel(dwarf, stairsGroup){
+        if(numJewels == 0){
+            dwarf.kill();
+            game.add.text(game.world.centerX - 150, game.world.centerY, 'Ya got all the jewels!\n Off ter tha\' next level, then!');
+            
+        }
+        
+        
+    }
     
     
     //What happens after the dwarf overlaps with a jewel?
