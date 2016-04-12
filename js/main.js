@@ -50,6 +50,9 @@ window.onload = function() {
     var jewelGroup;   //Object
     var stairsGroup; //Object
     
+    //Our special lava variable!
+    var lavaEnabled = false;
+    
     //Cursors variable.
     var cursors;
     
@@ -105,10 +108,10 @@ window.onload = function() {
         
         //Bugger it, add the jewels all individually!
         
-        jewel1 = game.add.sprite(32,32, 'jewel');
-        jewel2 = game.add.sprite(0,256, 'jewel');
-        jewel3 = game.add.sprite(96,224, 'jewel');
-        jewel4 = game.add.sprite(160,128, 'jewel');
+        jewel1 = game.add.sprite(32,0, 'jewel');
+        jewel2 = game.add.sprite(0,224, 'jewel');
+        jewel3 = game.add.sprite(96,192, 'jewel');
+        jewel4 = game.add.sprite(160,96, 'jewel');
 
         //cavernMap.createFromObjects('Jewels', 3, 'jewel',0, true, false, jewelGroup);
         //cavernMap.createFromObjects('Stairs', 6, 'stairs',0, true, false, stairsGroup);
@@ -182,6 +185,7 @@ window.onload = function() {
     function lavaFlood(lavaLayer){
         console.log('Lava has flooded the cavern!');
         lavaLayer.visible = true;
+        lavaEnabled = true;
         //After we make the lava visible, we set a delay for calling lavaRecede after the lava duration has passed. 
         game.time.events.add(lavaDuration, lavaRecede, this, lavaLayer );
         
@@ -191,6 +195,7 @@ window.onload = function() {
     function lavaRecede(lavaLayer){
         console.log('The lava has receded!');
         lavaLayer.visible = false;
+        lavaEnabled = false;
         //After the lava is dispelled, call lavaFlood() after the lava period has passed.
         game.time.events.add(lavaPeriod, lavaFlood, this, lavaLayer );
         
@@ -209,11 +214,11 @@ window.onload = function() {
     //What happens when the dwarf collides with a visible lava tile?
     function fieryDeath(dwarf, lavaLayer){
         console.log('Check for a fiery death!');
-        console.log(lavaLayer.visible);
-        if(lavaLayer.visible === true){
-            console.log('Lava layer is visible!');
+        console.log(lavaEnabled);
+        if(lavaEnabled){
+            console.log('Lava layer is enabled!');
             dwarf.kill();
-            game.add.text(game.world.centerX, game.world.centerY, 'Ya pranced into tha\' lava an\' died. \n Game O\'er, ya nitwit!\n');
+            game.add.text(game.world.centerX - 150, game.world.centerY, 'Ya pranced into tha\' lava an\' died. \n Game O\'er, ya nitwit!\n');
         
         }
     }
